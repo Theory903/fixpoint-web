@@ -26,8 +26,30 @@ ChartJS.register(
   ArcElement
 );
 
+interface RevenueOverview {
+  labels: string[];
+  revenue: number[];
+  expenses: number[];
+}
+
+interface ServicePerformance {
+  service: string;
+  count: number;
+}
+
+interface ReportData {
+  totalVehiclesServiced: number;
+  totalRevenue: number;
+  sparePartsSold: number;
+  activeUsers: number;
+  receivedPayment: number;
+  duePayment: number;
+  revenueOverview: RevenueOverview;
+  servicePerformance: ServicePerformance[];
+}
+
 export default function FinancialReportsPage() {
-  const [reportData, setReportData] = useState(null);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
 
   useEffect(() => {
     const data = {

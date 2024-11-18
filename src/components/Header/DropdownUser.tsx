@@ -9,7 +9,7 @@ const DropdownGarageOutlet = () => {
 
   // Close dropdown on Escape key press
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setDropdownOpen(false);
       }
