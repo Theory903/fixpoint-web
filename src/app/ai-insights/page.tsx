@@ -150,7 +150,7 @@ export default function AIInsightsPage() {
             Competitor Analysis
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Analyze your competitors' pricing, services, and market positioning to stay ahead.
+            Analyze your competitors&apos; pricing, services, and market positioning to stay ahead.
           </p>
           <input
             type="text"
