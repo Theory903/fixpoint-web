@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
@@ -25,97 +25,159 @@ export default function CustomersPage() {
 
   const totalPages = Math.ceil(filteredCustomers.length / rowsPerPage);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id:number) => {
     alert(`Deleted customer with ID: ${id}`);
   };
 
-  const handleView = (id: number) => {
+  const handleView = (id:number) => {
     alert(`Viewing details for customer with ID: ${id}`);
   };
 
   return (
     <DefaultLayout>
-      <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+      <div className="p-4 space-y-6">
+        <h1 className="text-xl font-bold text-gray-800 dark:text-white md:text-2xl">
           Customer Management
         </h1>
 
         {/* Search Bar */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <input
             type="text"
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 md:w-1/3"
+            aria-label="Search customers"
           />
-          <button className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600">
+          <button
+            className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg md:w-auto hover:bg-blue-600"
+            aria-label="Add New Customer"
+          >
             Add New Customer
           </button>
         </div>
 
         {/* Customer Table */}
         <div className="overflow-x-auto">
-          <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
+          <table className="hidden w-full border-collapse border border-gray-300 dark:border-gray-700 md:table">
             <thead className="bg-gray-100 dark:bg-gray-800">
               <tr>
-                <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <th className="p-4 text-left text-sm font-semibold text-gray-700 border dark:text-gray-300">
                   Name
                 </th>
-                <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <th className="p-4 text-left text-sm font-semibold text-gray-700 border dark:text-gray-300">
                   Email
                 </th>
-                <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <th className="p-4 text-left text-sm font-semibold text-gray-700 border dark:text-gray-300">
                   Phone
                 </th>
-                <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <th className="p-4 text-left text-sm font-semibold text-gray-700 border dark:text-gray-300">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
-              {paginatedCustomers.map((customer) => (
-                <tr
+              {paginatedCustomers.length > 0 ? (
+                paginatedCustomers.map((customer) => (
+                  <tr
+                    key={customer.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <td className="p-4 text-sm text-gray-600 border dark:text-gray-400">
+                      {customer.name}
+                    </td>
+                    <td className="p-4 text-sm text-gray-600 border dark:text-gray-400">
+                      {customer.email}
+                    </td>
+                    <td className="p-4 text-sm text-gray-600 border dark:text-gray-400">
+                      {customer.phone}
+                    </td>
+                    <td className="p-4 text-sm text-gray-600 border dark:text-gray-400">
+                      <button
+                        onClick={() => handleView(customer.id)}
+                        className="text-blue-500 hover:underline"
+                        aria-label={`View details for ${customer.name}`}
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleDelete(customer.id)}
+                        className="ml-4 text-red-500 hover:underline"
+                        aria-label={`Delete ${customer.name}`}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="p-4 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No customers found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* Mobile View */}
+          <div className="flex flex-col space-y-4 md:hidden">
+            {paginatedCustomers.length > 0 ? (
+              paginatedCustomers.map((customer) => (
+                <div
                   key={customer.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="p-4 space-y-2 bg-white border rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700"
                 >
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>Name: </strong>
                     {customer.name}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>Email: </strong>
                     {customer.email}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>Phone: </strong>
                     {customer.phone}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
+                  </p>
+                  <div className="flex space-x-4">
                     <button
                       onClick={() => handleView(customer.id)}
-                      className="text-blue-500 hover:underline"
+                      className="text-sm text-blue-500 hover:underline"
+                      aria-label={`View details for ${customer.name}`}
                     >
                       View
                     </button>
                     <button
                       onClick={() => handleDelete(customer.id)}
-                      className="text-red-500 hover:underline ml-4"
+                      className="text-sm text-red-500 hover:underline"
+                      aria-label={`Delete ${customer.name}`}
                     >
                       Delete
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No customers found.
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col items-center gap-4 mt-4 md:flex-row md:justify-between">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-lg ${
               currentPage === 1
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500"
+                ? "bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400 cursor-not-allowed"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
@@ -131,7 +193,7 @@ export default function CustomersPage() {
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-lg ${
               currentPage === totalPages
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500"
+                ? "bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400 cursor-not-allowed"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >

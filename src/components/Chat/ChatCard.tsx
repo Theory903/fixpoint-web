@@ -55,13 +55,13 @@ const ChatCard = () => {
   return (
     <div className="col-span-12 xl:col-span-4 rounded-lg bg-white dark:bg-gray-800 py-6 shadow">
       <h4 className="mb-6 px-8 text-lg font-bold text-gray-800 dark:text-white">
-        Aapke Chats
+        Chats
       </h4>
 
       <div className="space-y-2">
         {chatData.map((chat, index) => (
           <Link
-            href="/"
+            href=''
             key={index}
             className="flex items-center gap-4 px-8 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
             aria-label={`Chat with ${chat.name}`}

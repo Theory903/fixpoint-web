@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   LayoutGrid,
   User,
@@ -11,41 +11,19 @@ import {
   Database,
   FileText,
   CreditCard,
-  Bell,
-  Settings,
-  MessageSquare,
-  DollarSign,
-  Shield,
   Menu,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { useMediaQuery } from "react-responsive";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 
 export default function Component({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedOutlet, setSelectedOutlet] = useState("main-branch");
+  const [currentPage, setCurrentPage] = useState("Dashboard");
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
-
-  const outlets = [
-    { id: "main-branch", name: "Main Branch" },
-    { id: "downtown", name: "Downtown Store" },
-    { id: "mall-outlet", name: "Shopping Mall" },
-    { id: "airport", name: "Airport Branch" },
-  ];
 
   const navigationItems = [
     { name: "Dashboard", icon: LayoutGrid, href: "/dashboard" },
-    { name: "Financial Reports", icon: DollarSign, href: "/finance" },
+    { name: "Financial Reports", icon: BarChart, href: "/finance" },
     { name: "Employee Management", icon: Users, href: "/employees" },
     { name: "Customer Management", icon: User, href: "/customers" },
     { name: "Payments & Invoicing", icon: CreditCard, href: "/transactions" },
@@ -53,20 +31,15 @@ export default function Component({ children }: { children: React.ReactNode }) {
     { name: "Service Orders", icon: Wrench, href: "/service-orders" },
     { name: "Inventory Management", icon: Database, href: "/inventory" },
     { name: "Personalized AI Insights", icon: FileText, href: "/ai-insights" },
-    { name: "Settings", icon: Settings, href: "/settings" },
+    { name: "Settings", icon: Menu, href: "/settings" },
   ];
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }, [isDark]);
 
   const NavLink = ({ item }: { item: typeof navigationItems[0] }) => {
     const isActive =
       typeof window !== "undefined" && window.location.pathname === item.href;
+
     return (
       <a
-        key={item.name}
         href={item.href}
         className={`flex items-center px-4 py-3 text-sm transition-colors duration-200 rounded-lg mx-2 ${
           isActive
@@ -74,6 +47,7 @@ export default function Component({ children }: { children: React.ReactNode }) {
             : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
         title={sidebarOpen ? "" : item.name}
+        onClick={() => setCurrentPage(item.name)}
       >
         <item.icon className="h-5 w-5" />
         {sidebarOpen && <span className="ml-3 font-medium">{item.name}</span>}
@@ -82,7 +56,7 @@ export default function Component({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className={`flex min-h-screen ${isDark ? "dark" : ""}`}>
+    <div className="flex min-h-screen">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
@@ -128,33 +102,6 @@ export default function Component({ children }: { children: React.ReactNode }) {
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
-          </button>
-
-          {/* Outlet Selector */}
-          <Select value={selectedOutlet} onValueChange={setSelectedOutlet}>
-            <SelectTrigger className="w-48 md:w-56 bg-opacity-80 bg-background border border-input rounded-lg">
-              <SelectValue placeholder="Select outlet" />
-            </SelectTrigger>
-            <SelectContent className="bg-opacity-90 bg-background border border-input rounded-lg shadow-lg">
-              {outlets.map((outlet) => (
-                <SelectItem key={outlet.id} value={outlet.id}>
-                  {outlet.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Theme Toggle Button */}
-          <button
-            onClick={() => setIsDark(!isDark)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {isDark ? (
-              <Sun className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-            ) : (
-              <Moon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-            )}
           </button>
         </header>
 

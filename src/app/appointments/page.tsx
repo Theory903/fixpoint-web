@@ -1,24 +1,109 @@
 'use client';
 import React, { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
 
-const appointments = Array.from({ length: 50 }, (_, index) => ({
-  id: index + 1,
-  customerName: `Customer ${index + 1}`,
-  date: `2024-11-${String(index % 30 + 1).padStart(2, "0")}`,
-  time: `${9 + (index % 10)}:00 AM`,
-  service: index % 2 === 0 ? "Oil Change" : "Engine Repair",
-  status: index % 3 === 0 ? "Completed" : "Scheduled",
-}));
+const appointments = [
+  {
+    id: 1,
+    customerName: "Amit Sharma",
+    date: "2024-11-01",
+    time: "10:00 AM",
+    service: "Oil Change",
+    status: "Scheduled",
+  },
+  {
+    id: 2,
+    customerName: "Neha Verma",
+    date: "2024-11-02",
+    time: "11:30 AM",
+    service: "Tire Replacement",
+    status: "Completed",
+  },
+  {
+    id: 3,
+    customerName: "Rahul Singh",
+    date: "2024-11-03",
+    time: "02:00 PM",
+    service: "Engine Repair",
+    status: "Scheduled",
+  },
+  {
+    id: 4,
+    customerName: "Priya Gupta",
+    date: "2024-11-04",
+    time: "03:00 PM",
+    service: "Battery Replacement",
+    status: "Scheduled",
+  },
+  {
+    id: 5,
+    customerName: "Rohit Jain",
+    date: "2024-11-05",
+    time: "01:00 PM",
+    service: "Brake Check",
+    status: "Completed",
+  },
+  {
+    id: 6,
+    customerName: "Sonia Mehta",
+    date: "2024-11-06",
+    time: "09:30 AM",
+    service: "Wheel Alignment",
+    status: "Cancelled",
+  },
+  {
+    id: 7,
+    customerName: "Manish Agarwal",
+    date: "2024-11-07",
+    time: "12:00 PM",
+    service: "Oil Change",
+    status: "Completed",
+  },
+  {
+    id: 8,
+    customerName: "Anjali Kapoor",
+    date: "2024-11-08",
+    time: "04:30 PM",
+    service: "Tire Replacement",
+    status: "Scheduled",
+  },
+  {
+    id: 9,
+    customerName: "Karan Malhotra",
+    date: "2024-11-09",
+    time: "11:00 AM",
+    service: "Car Wash",
+    status: "Completed",
+  },
+  {
+    id: 10,
+    customerName: "Deepak Chauhan",
+    date: "2024-11-10",
+    time: "01:30 PM",
+    service: "AC Repair",
+    status: "Scheduled",
+  },
+];
+
 
 export default function AppointmentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  const filteredAppointments = appointments.filter((appointment) =>
-    appointment.customerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchesSearch = appointment.customerName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesDate =
+      !selectedDate ||
+      appointment.date ===
+        (selectedDate ? selectedDate.toISOString().split("T")[0] : ""); // Compare with calendar date
+    return matchesSearch && matchesDate;
+  });
 
   const paginatedAppointments = filteredAppointments.slice(
     (currentPage - 1) * rowsPerPage,
@@ -34,18 +119,16 @@ export default function AppointmentsPage() {
   return (
     <DefaultLayout>
       <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Appointments
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Appointments</h1>
 
         {/* Search Bar and Add Button */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <input
             type="text"
             placeholder="Search appointments..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
           <button
             onClick={handleSchedule}
@@ -55,11 +138,18 @@ export default function AppointmentsPage() {
           </button>
         </div>
 
-        {/* Calendar Placeholder */}
-        <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-          <p className="text-gray-600 dark:text-gray-300">
-            Calendar Component Placeholder
-          </p>
+        {/* Calendar */}
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <Calendar
+            onChange={(value) => setSelectedDate(value as Date)}
+            value={selectedDate}
+            className="w-full"
+          />
+          {selectedDate && (
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+              Showing results for: {selectedDate.toDateString()}
+            </p>
+          )}
         </div>
 
         {/* Appointments Table */}

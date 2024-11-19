@@ -26,7 +26,7 @@ export default function SettingsPage() {
           <div className="flex justify-between">
             <div className="text-gray-600 dark:text-gray-400">
               <p className="text-sm">Username:</p>
-              <p className="font-medium">John Doe</p>
+              <p className="font-medium">Arvind Kumar</p>
             </div>
             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
               Edit
@@ -35,7 +35,7 @@ export default function SettingsPage() {
           <div className="flex justify-between">
             <div className="text-gray-600 dark:text-gray-400">
               <p className="text-sm">Email:</p>
-              <p className="font-medium">johndoe@example.com</p>
+              <p className="font-medium">arvind.kumar@example.in</p>
             </div>
             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
               Edit

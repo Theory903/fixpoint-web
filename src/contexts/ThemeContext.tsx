@@ -1,42 +1,42 @@
-"use client";
+// context/ThemeContext.js
+import React, { createContext, useState, useEffect } from "react";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+export const ThemeContext = createContext({
+  darkMode: false,
+  toggleTheme: () => {},
+});
 
-type ThemeContextType = {
-  isDarkMode: boolean;
-  toggleTheme: () => void;
-};
+import { ReactNode } from "react";
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [darkMode, setDarkMode] = useState(false);
 
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
-};
-
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
+  // Apply the saved theme on initial load
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
-      setIsDarkMode(true);
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      setDarkMode(true);
       document.documentElement.classList.add("dark");
+    } else {
+      setDarkMode(false);
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
+  // Toggle theme and save to localStorage
   const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
-    const newTheme = !isDarkMode ? "dark" : "light";
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    setDarkMode((prev) => {
+      const newMode = !prev;
+      localStorage.setItem("theme", newMode ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", newMode);
+      return newMode;
+    });
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider value={{ darkMode, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -37,7 +37,7 @@ const Login: React.FC = () => {
       return;
     }
 
-    if (email === "admin@gmail.com" && password === "admin") {
+    if (email === "admin@example.com" && password === "password123") {
       router.push("/dashboard");
     } else {
       setError("Invalid email or password");

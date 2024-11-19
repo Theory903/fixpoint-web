@@ -36,31 +36,36 @@ export default function InventoryManagementPage() {
 
   return (
     <DefaultLayout>
-      <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Inventory Management
-        </h1>
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Header */}
+        <div className="text-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold md:text-3xl">Inventory Management</h1>
+          <p className="mt-2 text-sm md:text-base">
+            AI-powered inventory management ensures optimal stock levels, predicts demand, and automates restocking for your garage.
+          </p>
+        </div>
 
-        <p className="text-gray-600 dark:text-gray-400">
-          AI-powered inventory management ensures optimal stock levels, predicts demand, and automates restocking for your garage.
-        </p>
-
-        {/* Search Bar */}
-        <div className="flex items-center justify-between">
-          <input
-            type="text"
-            placeholder="Search inventory..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-          <button className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600">
-            Add New Item
+        {/* Search and Add */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="Search inventory..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            />
+            <span className="absolute top-2 right-3 text-gray-400">
+              🔍
+            </span>
+          </div>
+          <button className="w-full md:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-lg flex items-center justify-center gap-2 hover:bg-blue-600">
+            ➕ Add New Item
           </button>
         </div>
 
-        {/* Inventory Table */}
-        <div className="overflow-x-auto">
+        {/* Table for Desktop */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
             <thead className="bg-gray-100 dark:bg-gray-800">
               <tr>
@@ -85,10 +90,10 @@ export default function InventoryManagementPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedItems.map((item) => (
+              {paginatedItems.map((item, idx) => (
                 <tr
                   key={item.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className={`${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
                 >
                   <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
                     {item.itemName}
@@ -129,14 +134,56 @@ export default function InventoryManagementPage() {
           </table>
         </div>
 
+        {/* Cards for Mobile */}
+        <div className="md:hidden space-y-4">
+          {paginatedItems.map((item) => (
+            <div
+              key={item.id}
+              className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md"
+            >
+              <p className="text-sm font-bold text-gray-700 dark:text-white">
+                {item.itemName}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Stock:</strong>{" "}
+                <span
+                  className={`px-2 py-1 rounded-full text-white ${
+                    item.stock < 50
+                      ? "bg-red-500"
+                      : item.stock < 100
+                      ? "bg-yellow-500"
+                      : "bg-green-500"
+                  }`}
+                >
+                  {item.stock}
+                </span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Predicted Demand:</strong> {item.predictedDemand}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Restock Date:</strong> {item.restockDate}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <strong>AI Insights:</strong> {item.aiInsights}
+              </p>
+              <button
+                onClick={() => handleOrderStock(item.id)}
+                className="mt-2 text-blue-500 hover:underline text-sm"
+              >
+                AI Restock
+              </button>
+            </div>
+          ))}
+        </div>
+
         {/* Pagination */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col md:flex-row md:justify-between items-center gap-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
             className={`px-4 py-2 rounded-lg ${
               currentPage === 1
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500"
+                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
@@ -146,13 +193,10 @@ export default function InventoryManagementPage() {
             Page {currentPage} of {totalPages}
           </p>
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             className={`px-4 py-2 rounded-lg ${
               currentPage === totalPages
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500"
+                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
