@@ -11,7 +11,7 @@ const competitors = [
 const inventory = [
   { name: "Engine Oil", stock: 120, status: "Optimal" },
   { name: "Brake Pads", stock: 40, status: "Low Stock" },
-  { name: "Tires", stock: 10, status: "Critical" },
+  { name: "Tyres", stock: 10, status: "Critical" },
 ];
 
 const goals = [

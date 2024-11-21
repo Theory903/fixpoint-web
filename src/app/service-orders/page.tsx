@@ -2,18 +2,33 @@
 import React, { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
-const serviceOrders = Array.from({ length: 50 }, (_, index) => ({
+const initialServiceOrders = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
   customerName: `Customer ${index + 1}`,
-  service: index % 3 === 0 ? "Oil Change" : index % 3 === 1 ? "Brake Repair" : "Engine Overhaul",
+  service:
+    index % 3 === 0
+      ? "Oil Change"
+      : index % 3 === 1
+      ? "Brake Repair"
+      : "Engine Overhaul",
   assignedMechanic: index % 2 === 0 ? "Rajesh Kumar" : "Anita Verma",
   status: index % 4 === 0 ? "Completed" : index % 4 === 1 ? "In Progress" : "Pending",
   cost: `₹${(index + 1) * 1000}`,
 }));
 
 export default function ServiceOrdersPage() {
+  const [serviceOrders, setServiceOrders] = useState(initialServiceOrders);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [newOrder, setNewOrder] = useState({
+    customerName: "",
+    service: "",
+    assignedMechanic: "",
+    cost: "",
+    status: "Pending",
+  });
+
   const rowsPerPage = 10;
 
   const filteredOrders = serviceOrders.filter((order) =>
@@ -27,13 +42,31 @@ export default function ServiceOrdersPage() {
 
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
-  const handleUpdateStatus = (id: number) => {
-    alert(`Update status for service order with ID: ${id}`);
+  const handleAddNewOrder = () => {
+    setServiceOrders((prevOrders) => [
+      ...prevOrders,
+      {
+        ...newOrder,
+        id: prevOrders.length + 1,
+      },
+    ]);
+    setShowModal(false);
+    setNewOrder({
+      customerName: "",
+      service: "",
+      assignedMechanic: "",
+      cost: "",
+      status: "Pending",
+    });
   };
 
-  const handleViewDetails = (id: number) => {
-    alert(`Viewing details for service order with ID: ${id}`);
-  };
+  serviceOrders.reduce<{ [key: string]: typeof serviceOrders }>((acc, order) => {
+    if (!acc[order.assignedMechanic]) {
+      acc[order.assignedMechanic] = [];
+    }
+    acc[order.assignedMechanic].push(order);
+    return acc;
+  }, {});
 
   return (
     <DefaultLayout>
@@ -51,12 +84,81 @@ export default function ServiceOrdersPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
-          <button className="w-full md:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600">
+          <button
+            onClick={() => setShowModal(true)}
+            className="w-full md:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+          >
             Add New Service Order
           </button>
         </div>
 
-        {/* Service Orders Table (Desktop) */}
+        {/* Add New Order Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+                Add New Service Order
+              </h2>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Customer Name"
+                  value={newOrder.customerName}
+                  onChange={(e) =>
+                    setNewOrder({ ...newOrder, customerName: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                />
+                <input
+                  type="text"
+                  placeholder="Service"
+                  value={newOrder.service}
+                  onChange={(e) =>
+                    setNewOrder({ ...newOrder, service: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                />
+                <input
+                  type="text"
+                  placeholder="Assigned Mechanic"
+                  value={newOrder.assignedMechanic}
+                  onChange={(e) =>
+                    setNewOrder({
+                      ...newOrder,
+                      assignedMechanic: e.target.value,
+                    })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                />
+                <input
+                  type="text"
+                  placeholder="Cost"
+                  value={newOrder.cost}
+                  onChange={(e) =>
+                    setNewOrder({ ...newOrder, cost: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                />
+              </div>
+              <div className="flex items-center justify-between mt-6">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddNewOrder}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  Add Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Service Orders Table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
             <thead className="bg-gray-100 dark:bg-gray-800">
@@ -76,127 +178,32 @@ export default function ServiceOrdersPage() {
                 <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Status
                 </th>
-                <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Actions
-                </th>
               </tr>
             </thead>
             <tbody>
               {paginatedOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    {order.customerName}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    {order.service}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    {order.assignedMechanic}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    {order.cost}
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    <span
-                      className={`px-2 py-1 rounded-full text-white ${
-                        order.status === "Completed"
-                          ? "bg-green-500"
-                          : order.status === "In Progress"
-                          ? "bg-blue-500"
-                          : "bg-yellow-500"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="p-4 border text-sm text-gray-600 dark:text-gray-400">
-                    <button
-                      onClick={() => handleViewDetails(order.id)}
-                      className="text-blue-500 hover:underline"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleUpdateStatus(order.id)}
-                      className="text-green-500 hover:underline ml-4"
-                    >
-                      Update
-                    </button>
-                  </td>
+                <tr key={order.id}>
+                  <td className="p-4 border">{order.customerName}</td>
+                  <td className="p-4 border">{order.service}</td>
+                  <td className="p-4 border">{order.assignedMechanic}</td>
+                  <td className="p-4 border">{order.cost}</td>
+                  <td className="p-4 border">{order.status}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Service Orders Cards (Mobile) */}
-        <div className="md:hidden space-y-4">
-          {paginatedOrders.map((order) => (
-            <div
-              key={order.id}
-              className="p-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md space-y-2"
-            >
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Customer:</strong> {order.customerName}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Service:</strong> {order.service}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Mechanic:</strong> {order.assignedMechanic}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Cost:</strong> {order.cost}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`px-2 py-1 rounded-full text-white ${
-                    order.status === "Completed"
-                      ? "bg-green-500"
-                      : order.status === "In Progress"
-                      ? "bg-blue-500"
-                      : "bg-yellow-500"
-                  }`}
-                >
-                  {order.status}
-                </span>
-              </p>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => handleViewDetails(order.id)}
-                  className="text-blue-500 hover:underline text-sm"
-                >
-                  View
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus(order.id)}
-                  className="text-green-500 hover:underline text-sm"
-                >
-                  Update
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Pagination */}
-        <div className="flex flex-col items-center gap-4 mt-4 md:flex-row md:justify-between">
+        <div className="flex items-center justify-between mt-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-lg ${
-              currentPage === 1
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
           >
             Previous
           </button>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p>
             Page {currentPage} of {totalPages}
           </p>
           <button
@@ -204,11 +211,7 @@ export default function ServiceOrdersPage() {
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-lg ${
-              currentPage === totalPages
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
           >
             Next
           </button>

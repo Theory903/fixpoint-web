@@ -11,9 +11,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2"; // Ensure react-chartjs-2 is installed
-import { formatCurrency } from "@/lib/formatCurrency"; // Helper for currency formatting
-import Table from "@/components/common/Table"; // Reusable table component
+import { Bar, Doughnut } from "react-chartjs-2";
 
 // Register Chart.js components
 ChartJS.register(
@@ -54,15 +52,15 @@ export default function FinancialReportsPage() {
   useEffect(() => {
     const data = {
       totalVehiclesServiced: 1245,
-      totalRevenue: 312450, // ₹3,12,450
+      totalRevenue: 312450,
       sparePartsSold: 1234,
       activeUsers: 245,
-      receivedPayment: 45070, // ₹45,070
-      duePayment: 32400, // ₹32,400
+      receivedPayment: 45070,
+      duePayment: 32400,
       revenueOverview: {
         labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-        revenue: [50, 60, 75, 80, 100], // Revenue in thousands
-        expenses: [30, 40, 50, 60, 70], // Expenses in thousands
+        revenue: [50, 60, 75, 80, 100],
+        expenses: [30, 40, 50, 60, 70],
       },
       servicePerformance: [
         { service: "Oil Change", count: 350 },
@@ -103,7 +101,7 @@ export default function FinancialReportsPage() {
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 shadow rounded-lg">
           <h2 className="text-lg font-semibold">Total Revenue</h2>
-          <p className="text-4xl font-bold text-blue-600">{formatCurrency(totalRevenue)}</p>
+          <p className="text-4xl font-bold text-blue-600">{`₹${totalRevenue.toLocaleString()}`}</p>
           <p className="text-sm text-gray-500">5.45% Increase</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 shadow rounded-lg">
@@ -122,11 +120,11 @@ export default function FinancialReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 p-4 shadow rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Received Payment</h2>
-          <p className="text-4xl font-bold text-green-600">{formatCurrency(receivedPayment)}</p>
+          <p className="text-4xl font-bold text-green-600">{`₹${receivedPayment.toLocaleString()}`}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 shadow rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Due Payment</h2>
-          <p className="text-4xl font-bold text-red-600">{formatCurrency(duePayment)}</p>
+          <p className="text-4xl font-bold text-red-600">{`₹${duePayment.toLocaleString()}`}</p>
         </div>
       </div>
 
@@ -141,12 +139,12 @@ export default function FinancialReportsPage() {
                 {
                   label: "Revenue (₹ in Thousands)",
                   data: revenueOverview.revenue,
-                  backgroundColor: "rgba(54, 162, 235, 0.7)", // Light Blue
+                  backgroundColor: "rgba(0, 128, 0, 0.7)", // Green
                 },
                 {
                   label: "Expenses (₹ in Thousands)",
                   data: revenueOverview.expenses,
-                  backgroundColor: "rgba(255, 99, 132, 0.7)", // Light Red
+                  backgroundColor: "rgba(255, 0, 0, 0.7)", // Red
                 },
               ],
             }}
@@ -164,7 +162,7 @@ export default function FinancialReportsPage() {
                 },
                 tooltip: {
                   callbacks: {
-                    label: (tooltipItem) => `₹${tooltipItem.raw}K`, // Format tooltips
+                    label: (tooltipItem) => `₹${tooltipItem.raw}K`,
                   },
                 },
               },
@@ -176,12 +174,12 @@ export default function FinancialReportsPage() {
                     },
                   },
                   grid: {
-                    display: false, // Remove X-axis gridlines
+                    display: false,
                   },
                 },
                 y: {
                   ticks: {
-                    callback: (value) => `₹${value}K`, // Format Y-axis ticks
+                    callback: (value) => `₹${value}K`,
                     font: {
                       size: 10,
                     },
@@ -207,10 +205,10 @@ export default function FinancialReportsPage() {
                 {
                   data: servicePerformance.map((item) => item.count),
                   backgroundColor: [
-                    "rgba(75, 192, 192, 0.6)",
-                    "rgba(255, 99, 132, 0.6)",
-                    "rgba(54, 162, 235, 0.6)",
-                    "rgba(255, 206, 86, 0.6)",
+                    "rgba(0, 128, 0, 0.6)", // Green
+                    "rgba(255, 0, 0, 0.6)", // Red
+                    "rgba(0, 0, 255, 0.6)", // Blue
+                    "rgba(255, 165, 0, 0.6)", // Orange
                   ],
                 },
               ],
