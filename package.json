@@ -1,6 +1,6 @@
 {
-  "name": "free-nextadmin-nextjs",
-  "version": "0.1.0",
+  "name": "fixpoint",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -49,5 +49,17 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "description": "Here’s a **professional and comprehensive README file** for your Garage Management System (GMS) project:",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Theory903/fixpointback.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Theory903/fixpointback/issues"
+  },
+  "homepage": "https://github.com/Theory903/fixpointback#readme"
 }

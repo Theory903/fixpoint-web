@@ -1,78 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-interface Employee {
-  id: number;
-  name: string;
-  role: string;
-  attendance: string;
-  performance: string;
-  tags: string[];
-  status: string;
-}
+const employees = Array.from({ length: 30 }, (_, index) => ({
+  id: index + 1,
+  name: `Employee ${index + 1}`,
+  role: index % 3 === 0 ? "Manager" : index % 3 === 1 ? "Technician" : "Supervisor",
+  attendance: `${Math.floor(Math.random() * 100)}%`,
+  performance: index % 5 === 0 ? "Outstanding" : index % 5 === 1 ? "Good" : "Average",
+  tags: index % 2 === 0 ? ["Reliable", "Team Player"] : ["Punctual", "Efficient"],
+  status: index % 2 === 0 ? "Active" : "Inactive",
+}));
 
-const EmployeeManagement: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+const EmployeeManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [newEmployee, setNewEmployee] = useState({
-    name: "",
-    role: "",
-    attendance: "",
-    performance: "",
-    tags: [] as string[],
-    status: "Active",
-  });
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  // Fetch employees from the backend
-  const fetchEmployees = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("http://localhost:5001/api/employees");
-      if (!response.ok) throw new Error("Failed to fetch employees.");
-      const data = await response.json();
-      setEmployees(data);
-    } catch (err: any) {
-      setError(err.message || "An error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Add a new employee
-  const handleAddEmployee = async () => {
-    if (!newEmployee.name || !newEmployee.role || !newEmployee.attendance || !newEmployee.performance) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:5001/api/employees", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newEmployee, id: employees.length + 1 }),
-      });
-
-      if (!response.ok) throw new Error("Failed to add employee.");
-
-      fetchEmployees(); // Refresh the list
-      setShowAddForm(false); // Hide the form
-      setNewEmployee({ name: "", role: "", attendance: "", performance: "", tags: [], status: "Active" });
-    } catch (err) {
-      console.error(err);
-      alert("Could not add employee.");
-    }
-  };
-
-  // Filter employees based on search term
   const filteredEmployees = employees.filter((employee) =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -83,12 +25,6 @@ const EmployeeManagement: React.FC = () => {
         Employee Management
       </h1>
 
-      {/* Error Message */}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {/* Loading Spinner */}
-      {loading && <p className="text-blue-500">Loading employees...</p>}
-
       {/* Search Bar */}
       <div className="flex flex-col items-start space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <input
@@ -98,53 +34,10 @@ const EmployeeManagement: React.FC = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:opacity-90"
-        >
-          {showAddForm ? "Cancel" : "Add New Employee"}
+        <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:opacity-90">
+          Add New Employee
         </button>
       </div>
-
-      {/* Add Employee Form */}
-      {showAddForm && (
-        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md space-y-4">
-          <input
-            type="text"
-            placeholder="Name"
-            value={newEmployee.name}
-            onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-          <input
-            type="text"
-            placeholder="Role"
-            value={newEmployee.role}
-            onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-          <input
-            type="text"
-            placeholder="Attendance (%)"
-            value={newEmployee.attendance}
-            onChange={(e) => setNewEmployee({ ...newEmployee, attendance: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-          <input
-            type="text"
-            placeholder="Performance"
-            value={newEmployee.performance}
-            onChange={(e) => setNewEmployee({ ...newEmployee, performance: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-          />
-          <button
-            onClick={handleAddEmployee}
-            className="px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:opacity-90"
-          >
-            Save Employee
-          </button>
-        </div>
-      )}
 
       {/* Employee Table */}
       <div className="overflow-x-auto">
@@ -167,43 +60,82 @@ const EmployeeManagement: React.FC = () => {
                 Performance
               </th>
               <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Tags
+              </th>
+              <th className="p-4 border text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Status
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.length > 0 ? (
-              filteredEmployees.map((employee) => (
-                <tr
-                  key={employee.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <td className="p-4 border">{employee.id}</td>
-                  <td className="p-4 border">{employee.name}</td>
-                  <td className="p-4 border">{employee.role}</td>
-                  <td className="p-4 border">{employee.attendance}</td>
-                  <td className="p-4 border">{employee.performance}</td>
-                  <td className="p-4 border">
+            {filteredEmployees.map((employee) => (
+              <tr
+                key={employee.id}
+                className="md:hover:bg-gray-50 md:dark:hover:bg-gray-700 md:transition-colors flex flex-col md:table-row mb-4 md:mb-0 bg-white dark:bg-gray-800 rounded-lg shadow-md md:shadow-none"
+              >
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">ID:</strong>
+                  {employee.id}
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Name:</strong>
+                  {employee.name}
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Role:</strong>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white ${
+                      employee.role === "Manager"
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600"
+                        : employee.role === "Technician"
+                        ? "bg-gradient-to-r from-green-500 to-teal-500"
+                        : "bg-gradient-to-r from-yellow-500 to-orange-500"
+                    }`}
+                  >
+                    {employee.role}
+                  </span>
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Attendance:</strong>
+                  {employee.attendance}
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Performance:</strong>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white ${
+                      employee.performance === "Outstanding"
+                        ? "bg-green-500"
+                        : employee.performance === "Good"
+                        ? "bg-blue-500"
+                        : "bg-gray-500"
+                    }`}
+                  >
+                    {employee.performance}
+                  </span>
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Tags:</strong>
+                  {employee.tags.map((tag, index) => (
                     <span
-                      className={`px-2 py-1 rounded-full text-white ${
-                        employee.status === "Active" ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      key={index}
+                      className="inline-block px-2 py-1 mr-1 rounded-full bg-gray-200 dark:bg-gray-600 text-xs text-gray-800 dark:text-gray-300"
                     >
-                      {employee.status}
+                      {tag}
                     </span>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="p-4 text-center text-sm text-gray-600 dark:text-gray-400"
-                >
-                  No employees found.
+                  ))}
+                </td>
+                <td className="p-4 border text-sm text-gray-600 dark:text-gray-400 md:border-none">
+                  <strong className="block md:hidden">Status:</strong>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white ${
+                      employee.status === "Active" ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  >
+                    {employee.status}
+                  </span>
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
